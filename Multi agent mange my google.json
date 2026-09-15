@@ -1,0 +1,385 @@
+{
+  "name": "Multi agent mange my google",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "0701ddab-a3cd-463e-a678-286a51e093ca",
+      "name": "Telegram Trigger",
+      "webhookId": "4f76581f-58c3-4303-9f06-35b2b26890e8",
+      "credentials": {
+        "telegramApi": {
+          "id": "E9fQ99zVuUbkp5q7",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=You are a helpful, professional, and articulate AI calling agent. Your primary objective is to assist users efficiently during phone conversations by understanding their needs, gathering necessary details, and seamlessly interacting with integrated productivity tools to execute tasks.\n\n### Core Persona & Tone:\n- Tone: Polite, professional, conversational, concise, and empathetic. Speak naturally as if you are a human assistant on a live phone call.\n- Clarity: Confirm important details (like dates, names, or content) back to the user before executing any actions.\n- Efficiency: Keep responses relatively brief and conversational to maintain a smooth flow.\n\n### Available Tool Mapping & Capabilities:\nYou have access to the following tools connected via n8n:\n1. Gamil: Use this tool to send emails, draft messages, or search inbox records.\n2. Google Sheet: Use this tool to log data, track information, update records, or append rows.\n3. Calanedr: Use this tool to schedule appointments, check availability, or create calendar events.\n4. Google Doc: Use this tool to take notes, create documents, or draft written summaries.\n\n### Operational Guidelines:\n1. Active Listening: Listen carefully to what the user requires. If a request is ambiguous, politely ask a clarifying question.\n2. Tool Selection: Identify which tool is needed to fulfill the request and trigger the corresponding n8n tool/node.\n3. Execution & Confirmation: Inform the user when you are performing an action and confirm the successful outcome once complete.",
+          "maxIterations": 5,
+          "enableStreaming": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        368,
+        0
+      ],
+      "id": "0096474a-e33b-42ee-9a67-56e63df3c54a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "=telegram_{{ $json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        120,
+        232
+      ],
+      "id": "e6672475-0849-4263-8a13-4b3ddc00ef71",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "q": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Search_Query__q_', ``, 'string') }}",
+        "location": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Location__location_', ``, 'string') }}",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApiTool",
+      "typeVersion": 1,
+      "position": [
+        248,
+        232
+      ],
+      "id": "13080e92-b53c-420b-889f-71917a51574c",
+      "name": "Google search in SerpApi",
+      "credentials": {
+        "serpApi": {
+          "id": "EWvc5B9dbNPq9HcG",
+          "name": "SerpApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Input_Data_Field_Name', ``, 'string') }}",
+        "name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('File_Name', ``, 'string') }}",
+        "driveId": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Parent_Drive', ``, 'string') }}",
+          "mode": "url"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Parent_Folder', ``, 'string') }}",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTool",
+      "typeVersion": 3,
+      "position": [
+        504,
+        232
+      ],
+      "id": "da3eec04-146b-4fc4-8195-ecf161ba9b74",
+      "name": "Upload file in Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "n8QCcQqWk6ZvkUUH",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        240
+      ],
+      "id": "879b837a-30a5-4cfd-ad64-f91cf8d08ebb",
+      "name": "OpenAI ",
+      "credentials": {
+        "openAiApi": {
+          "id": "SA9CDyVLz44kZtoO",
+          "name": "OpenAI account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "documentId": {
+          "__rl": true,
+          "value": "=https://docs.google.com/spreadsheets/d/1HoOeCZNLWZ48SZ5JN9fpNVzrCZshnTbm_tXYGWF5VyM/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        656,
+        240
+      ],
+      "id": "c1312bf2-89f4-46ab-b7b2-2efac2cfd14e",
+      "name": " Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "JdFaxlcBZBtLT52l",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "allwyngeorge1993@gmail.com",
+          "mode": "list",
+          "cachedResultName": "allwyngeorge1993@gmail.com"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        800,
+        224
+      ],
+      "id": "a1471fd5-c929-414a-875a-f24d952402db",
+      "name": " Google Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "sf8Ntx5ZjY5vmdpm",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "driveId": "=myDrive",
+        "folderId": "=",
+        "title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Title', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        960,
+        240
+      ],
+      "id": "e6d8382a-f444-410f-8ab8-ae167a759e6c",
+      "name": " Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "SFDBC2MSXHMLjY6M",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1088,
+        0
+      ],
+      "id": "9b828699-696f-4c63-9492-45cdbf6637f1",
+      "name": "Send a text message",
+      "webhookId": "e31d5451-6def-4652-99ee-bb5f275c5f0c",
+      "credentials": {
+        "telegramApi": {
+          "id": "E9fQ99zVuUbkp5q7",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "id": "87d7d7f4-b0eb-4672-861b-c77d1604200f",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        376,
+        232
+      ],
+      "webhookId": "2ccc276e-2f6b-4320-90af-7d0425c64a68",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gmBSnfh7K0xmVtzK",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google search in SerpApi": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file in Google Drive": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI ": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    " Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    " Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    " Google Docs": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "1099d9cb-8621-41a9-b6d6-1d86d13080fb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "5a3a0ff88eb2603bda8c56e3b4eacd7a6445e9c12cbceaf474af556ff091e460"
+  },
+  "nodeGroups": [],
+  "id": "u3PYhAMHIt3Pnwzs",
+  "tags": []
+}
